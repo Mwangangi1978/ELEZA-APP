@@ -1,5 +1,5 @@
 import React from 'react';
-import logo from '../images/ELEZA.png';
+import logo from '/public/images/ELEZA.png';
 
 const Navbar = () => {
   return (
