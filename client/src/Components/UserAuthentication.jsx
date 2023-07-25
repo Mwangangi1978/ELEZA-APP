@@ -15,7 +15,7 @@ const UserAuthentication = (props) => {
   ]
 
   const [number, setNumber] = useState('');
-  const [county, setCounty] = useState(''); // Added the state variable for county selection
+  const [county, setCounty] = useState(''); 
   const [password, setPassword] = useState('');
   const [isSigningIn, setIsSigningIn] = useState(false);
 
@@ -24,16 +24,17 @@ const UserAuthentication = (props) => {
     try {
       if (isSigningIn) {
         // Signing in
-        const { data } = await axios.post('http://localhost:8080/login', {
-          username: county, // Updated the username field to "county"
+        const { data } = await axios.post('http://localhost:4000/login', {
+          idNumber: number, 
           password: password
         });
         toast.success(`Signed in successfully! ${data.username}`);
       } else {
         // Creating account if the user doesn't have an account.
-        const { data } = await axios.post('http://localhost:8080/signup', {
-          username: number,
-          password: password
+        const { data } = await axios.post('http://localhost:4000/signup', {
+          idNumber: number,
+          password: password,
+          county: county
         });
         toast.success(`Account created successfully!`);
       }
