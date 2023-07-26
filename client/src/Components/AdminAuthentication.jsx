@@ -20,8 +20,8 @@ const AdminAuthentication = (props) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const { data } = await axios.post('http://localhost:8080/login', {
-        username: selectedCounty, // Updated the username field to "selectedCounty"
+      const { data } = await axios.post('http://localhost:4000/adminlogin', {
+        county: selectedCounty,
         password: password
       });
       toast.success(`Signed in successfully! Welcome, ${data.username}`);
@@ -29,14 +29,20 @@ const AdminAuthentication = (props) => {
     } catch (error) {
       console.log('Error:', error.response);
       const errorMessage = error.response && error.response.data && error.response.data.Error
-        ? error.response.data.Error
-        : 'An error occurred';
+        
+        ? 'An error occurred'
+        : error.response.data.Error;
       toast.error(errorMessage);
     }
   };
 
   return (
     <div className="max-w-md mx-auto">
+      <img
+        src="/public/images/ELEZA.png"
+        alt="User Role"
+        className="w-32 h-32 mx-auto mb-4 rounded-full object-cover"
+      />
       <h1 className="text-2xl font-bold mb-4">Sign In</h1>
       <form onSubmit={handleSubmit}>
         <div className="mb-4">

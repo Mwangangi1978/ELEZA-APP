@@ -28,7 +28,7 @@ const UserAuthentication = (props) => {
           idNumber: number, 
           password: password
         });
-        toast.success(`Signed in successfully! ${data.username}`);
+        toast.success(`Signed in successfully! ${data.idNumber}`);
       } else {
         // Creating account if the user doesn't have an account.
         const { data } = await axios.post('http://localhost:4000/signup', {
@@ -42,8 +42,9 @@ const UserAuthentication = (props) => {
     } catch (error) {
       console.log('Error:', error.response);
       const errorMessage = error.response && error.response.data && error.response.data.Error
-        ? error.response.data.Error
-        : 'An error occurred';
+        
+        ? 'An error occurred'
+        : error.response.data.Error;
       toast.error(errorMessage);
     }
   };
@@ -54,6 +55,11 @@ const UserAuthentication = (props) => {
 
   return (
     <div className="max-w-md mx-auto">
+      <img
+        src="/public/images/ELEZA.png"
+        alt="User Role"
+        className="w-32 h-32 mx-auto mb-4 rounded-full object-cover"
+      />
       <h1 className="text-2xl font-bold mb-4">{isSigningIn ? 'Sign In' : 'Create an Account'}</h1>
       <form onSubmit={handleSubmit}>
         

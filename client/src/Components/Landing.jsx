@@ -12,7 +12,7 @@ const Landing = (props) => {
       <img
         src="/public/images/ELEZA.png"
         alt="User Role"
-        className="w-32 h-32 mx-auto mb-4 rounded-full object-cover"
+        className=" mx-auto mb-4  object-cover"
       />
       <h1 className="text-2xl font-bold mb-4 mx-auto text-center">Choose Your Role</h1>
       <div className="flex items-center justify-center">

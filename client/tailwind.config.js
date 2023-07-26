@@ -8,7 +8,8 @@ export default {
     "./src/Components/UserAuthentication.jsx",
     "./src/Components/AdminAuthentication.jsx",
     "./src/Components/UserHomePage.jsx",
-    "./src/Components/AdminHomePage.jsx"
+    "./src/Components/AdminHomePage.jsx",
+    "./src/Components/Landing.jsx"
   ],
   theme: {
     extend: {},

@@ -1,6 +1,8 @@
 const mongoose = require('mongoose');
+const {Schema} = mongoose;
+const bcrypt = require('bcrypt');
 
-const adminSchema = new mongoose.Schema({
+const adminSchema = new Schema({
   county: {
     type: String,
     required: true
@@ -10,7 +12,4 @@ const adminSchema = new mongoose.Schema({
     required: true
   }
 });
-
-const Admin = mongoose.model('Admin', adminSchema);
-
-module.exports = Admin;
+module.exports= mongoose.model('Admin', adminSchema);
