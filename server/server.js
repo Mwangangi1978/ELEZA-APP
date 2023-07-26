@@ -11,12 +11,32 @@ const Admin = require('./models/adminSchema')
 const app=express()
 
 
+const store = new MongoDBStore({
+  uri: process.env.MONGO_URI,
+  collection: 'sessions', // Collection name for storing sessions
+});
+
+// Catch errors
+store.on('error', (error) => {
+  console.error('Error while initializing session store:', error);
+});
+
 //Middlewares
 //To enable Cross-Origin Resource Sharing
 app.use(cors())
 app.use(express.static('../docs/index.html'))
 app.use(express.urlencoded({extended:false}))
 app.use(express.json())
+
+// Initialize express-session middleware
+app.use(
+  session({
+    secret: process.env.SESSION_SECRET || 'secret', // Replace 'secret' with a strong secret key
+    resave: false,
+    saveUninitialized: false,
+    store: store,
+  })
+);
 
 
 
@@ -95,7 +115,10 @@ app.post('/adminlogin', async (req, res) => {
       // Compare the provided password with the hashed password
       const isPasswordCorrect = await bcrypt.compare(password, admin.password);
 
+
       if (isPasswordCorrect) {
+        // Set the admin as logged in by storing its ID in the session
+        req.session.adminId = admin._id;
         res.status(200).json({
           status: 'Logged In',
           username: county
@@ -116,16 +139,16 @@ app.post('/adminlogin', async (req, res) => {
 app.post('/api/blogs', async (req, res) => {
   try {
     const { title, summary, body, meetingLink, meetingDate, expiryDate } = req.body;
-    const loggedInAdminId = /* Get the ObjectId of the currently logged-in admin user here */;
+    const loggedInAdminId = req.session.adminId;
 
     // Create a new blog with the provided data
     const blog = new Blog({
       title: title,
       summary: summary,
       body: body,
-      author: loggedInAdminId, // Populate the author field with the ObjectId of the currently logged-in admin user
+      author: loggedInAdminId, // Populating the author field with the ObjectId of the currently logged-in admin user
       meetingLink: meetingLink,
-      meetingDate:meetingdate,
+      meetingDate:meetingDate,
       expiryDate: expiryDate,
     });
 
@@ -141,7 +164,7 @@ app.post('/api/blogs', async (req, res) => {
 // Get all blogs written by the admin
 app.get('/api/blogs', async (req, res) => {
   try {
-    const loggedInAdminId = /* Get the ObjectId of the currently logged-in admin user here */;
+    const loggedInAdminId = req.session.adminId;
 
     // Find all blogs where the author is the currently logged-in admin
     const blogs = await Blog.find({ author: loggedInAdminId });
@@ -154,7 +177,7 @@ app.get('/api/blogs', async (req, res) => {
 //updating posts by admin
 app.put('/api/blogs/:id', async (req, res) => {
   try {
-    const { title, summary, body, meetingLink, meetingdate, expiryDate } = req.body;
+    const { title, summary, body, meetingLink, meetingDate, expiryDate } = req.body;
     const blogId = req.params.id;
 
     // Find the blog post by ID

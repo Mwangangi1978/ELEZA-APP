@@ -33,12 +33,17 @@ const blogSchema = new Schema({
   meetingLink: {
     type: String,
     default: 'No meeting link provided',
+    required: false,
+  },
+  meetingdate: {
+    type:Date,
+    required:false,
   },
   responses: [responseSchema],
   expiryDate: {
     type: Date, // Store the expiry date as a Date object
-    required: false,
+    required: true,
   },
 });
 
-module.exports = mongoose.model('Blog', blogSchema);
+module.exports = mongoose.model('Blog', blogSchema);s
