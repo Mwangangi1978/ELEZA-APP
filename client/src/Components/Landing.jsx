@@ -10,7 +10,7 @@ const Landing = (props) => {
   return (
     <div className="max-w-md mx-auto">
       <img
-        src="/public/images/ELEZA.png"
+        src="/images/ELEZA.png"
         alt="User Role"
         className=" mx-auto mb-4  object-cover"
       />
