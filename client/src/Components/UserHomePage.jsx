@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import moment from 'moment';
 
 const UserHomePage = ({ userCounty, userNumber }) => {
   const [authorBlogs, setAuthorBlogs] = useState([]);
@@ -9,7 +10,7 @@ const UserHomePage = ({ userCounty, userNumber }) => {
 
   const fetchAuthorBlogs = async () => {
     try {
-      const { data } = await axios.get(`/api/blogs?authorCounty=${userCounty}`);
+      const { data } = await axios.get('http://localhost:4000/api/blogs'/* /api/blogs?authorCounty=${userCounty} */);
       setAuthorBlogs(data);
     } catch (error) {
       console.error("Error fetching blogs:", error);
@@ -48,36 +49,20 @@ const UserHomePage = ({ userCounty, userNumber }) => {
     }
   };
 
-  const handleViewMore = async (blogId) => {
-    try {
-      // Update the blog object in the state to show the full body
-      const updatedBlogs = authorBlogs.map((blog) => {
+
+  const handleViewMore = (blogId) => {
+    // Toggle the expanded state of the blog when "View More" is clicked
+    setAuthorBlogs((prevBlogs) =>
+      prevBlogs.map((blog) => {
         if (blog._id === blogId) {
           return {
             ...blog,
-            showFullBody: true,
+            showFullBody: !blog.showFullBody,
           };
         }
         return blog;
-      });
-      setAuthorBlogs(updatedBlogs);
-  
-      // Fetch user responses for the blog
-      const { data } = await axios.get(`/api/blogs/${blogId}/responses`);
-      setAuthorBlogs((prevBlogs) =>
-        prevBlogs.map((blog) => {
-          if (blog._id === blogId) {
-            return {
-              ...blog,
-              responses: data,
-            };
-          }
-          return blog;
-        })
-      );
-    } catch (error) {
-      console.error('Error fetching responses:', error);
-    }
+      })
+    );
   };
   
 
@@ -120,7 +105,7 @@ const UserHomePage = ({ userCounty, userNumber }) => {
   };
 
   return (
-    <div>
+    <div className="max-w-lg mx-auto">
       <h1 className="text-3xl font-bold mb-6 text-center text-red-600">Welcome :{userNumber} !</h1>
       <h2 className="text-2xl font-bold mb-4 text-center">Forum Posts by Your County</h2>
       {authorBlogs.map((blog) => (
@@ -135,38 +120,28 @@ const UserHomePage = ({ userCounty, userNumber }) => {
           >
             {blog.meetingLink}
           </a>
-          <p className="mb-4">virtual meeting on;{blog.meetingDate}</p>
-          {expandedBlogId === blog._id ? (
-            <div>
-              <p className="text-gray-600 mb-4">{blog.body}</p>
-              <button
-                className="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600 mr-2"
-                onClick={() => setExpandedBlogId(null)}
-              >
-                View Less
-              </button>
-            </div>
+          <p className="mb-4">virtual meeting on: {moment(blog.meetingDate).format("YYYY-MM-DD HH:mm")}</p>
+          <p className="mb-4">Respond to this post by: {moment(blog.expiryDate).format("YYYY-MM-DD")}</p>
+
+
+          {/* Display the blog body only when "showFullBody" is true */}
+          {blog.showFullBody && <p className="text-gray-600 mb-4">{blog.body}</p>}
+          {blog.showFullBody ? (
+            <button
+              className="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600 mr-2"
+              onClick={() => handleViewMore(blog._id)}
+            >
+              View Less
+            </button>
           ) : (
-              <>
-                <button
-                  className="bg-green-500 text-white px-3 py-1 rounded hover:bg-green-600 mr-2"
-                  onClick={() => handleViewMore(blog._id)}
-                >
-                  View More
-                </button>
-              </>
+            <button
+              className="bg-green-500 text-white px-3 py-1 rounded hover:bg-green-600 mr-2"
+              onClick={() => handleViewMore(blog._id)}
+            >
+              View More
+            </button>
           )}
           <div className="mt-2">
-            {/* "View More" button */}
-            {!blog.showFullBody && (
-              <button
-                className="bg-black text-white px-4 py-2 rounded hover:bg-red-600 mr-2"
-                onClick={() => handleViewMore(blog._id)}
-              >
-                View More
-              </button>
-            )}
-            {/* Response Submission Form */}
             <form
               onSubmit={(e) => {
                 e.preventDefault();
@@ -188,23 +163,36 @@ const UserHomePage = ({ userCounty, userNumber }) => {
               </button>
             </form>
             {/* User Responses */}
-            <h2 className="text-2xl font-bold mb-4 text-center">Your responses:</h2>
-            {blog.responses &&
-              blog.responses.map(
-                (response) =>
-                  response.idNumber === userNumber && (
-                    <div key={response._id} className="mt-4 border rounded p-4">
-                      <h4 className="text-lg font-bold mb-2">Response for: {blog.title}</h4>
-                      {blog.showFullBody ? (
-                        <p className="mb-2">{response.body}</p>
-                      ) : (
-                        <p className="mb-2">{response.body.slice(0, 100)}...</p>
-                      )}
+            <h2 className="text-2xl font-bold mb-4 ">Your response to this post:</h2>
+            {blog.responses && blog.responses.map(
+              (response) =>
+                response.idNumber === userNumber && (
+                  <div key={response._id} className="mt-4 border rounded p-4">
+                    <h4 className="text-lg font-bold mb-2">Response for: {blog.title}</h4>
+                    {blog.showFullBody ? (
+                      <p className="mb-2">{response.body}</p>
+                    ) : (
+                      <p className="mb-2">{response.body.slice(0, 100)}...</p>
+                    )}
+
+                    {/* Show the "Resubmit Response" button */}
+                    {!showResubmitForm && (
+                      <button
+                        className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 mr-2"
+                        onClick={() => setShowResubmitForm(true)}
+                      >
+                        Resubmit Response
+                      </button>
+                    )}
+
+                    {/* Show the form for resubmitting the response if the button is clicked */}
+                    {showResubmitForm && (
                       <form
                         onSubmit={(e) => {
                           e.preventDefault();
-                          const responseBody = e.target.elements.response.value;
+                          const responseBody = e.target.elements['resubmit-response'].value;
                           handleFormResubmission(blog._id, response._id, responseBody);
+                          setShowResubmitForm(false); // Hide the form after submission
                         }}
                       >
                         <input
@@ -227,12 +215,19 @@ const UserHomePage = ({ userCounty, userNumber }) => {
                           Delete Response
                         </button>
                       </form>
-                    </div>
-                  )
+                    )}
+
+                  </div>
+                )
               )}
+            {/* Display the placeholder text when there are no responses */}
+          {blog.responses && blog.responses.length === 0 && (
+            <p>No response yet.</p>
+          )}
           </div>
         </div>
       ))}
+
       <ToastContainer />
     </div>
   );

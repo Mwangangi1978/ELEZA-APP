@@ -311,12 +311,13 @@ app.put('/api/blogs/:blogId/responses/:responseId', async (req, res) => {
 });
 
 
-app.get('/api/blogs/:blogId/responses', async (req, res) => {
+app.get('/api/blogs/responses', async (req, res) => {
   try {
-    const { blogId } = req.params;
+    /* const { blogId } = req.params; */
+    const idNumber = 42148986;
 
     // Find the blog by ID
-    const blog = await Blog.findById(blogId);
+    const blog = await Blog.findById(idNumber);
 
     if (!blog) {
       return res.status(404).json({ Error: 'Blog not found' });
@@ -330,6 +331,7 @@ app.get('/api/blogs/:blogId/responses', async (req, res) => {
     res.status(500).json({ Error: 'Failed to fetch responses', error });
   }
 });
+
 
 
 

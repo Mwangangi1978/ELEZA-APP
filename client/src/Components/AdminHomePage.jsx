@@ -4,7 +4,7 @@ import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import {format} from 'date-fns';
+import moment from 'moment';
 import NavBar from './NavBar'
 
 
@@ -285,8 +285,8 @@ const AdminHomePage = () => {
               >
                 Meeting Link
               </a>
-              <p className=" mb-4">Virtual meeting on:{/* {format(new Date(blog.meetingDate), "yyyy-MM-dd HH:mm")} */}</p>
-              <p>Users to respond to this forum by: {/* {format(new Date(blog.expiryDate), "yyyy-MM-dd")} } */}</p>
+              <p className=" mb-4">Virtual meeting on:{moment(blog.meetingDate).format("YYYY-MM-DD HH:mm")}</p>
+              <p>Users to respond to this forum by:{moment(blog.expiryDate).format("YYYY-MM-DD")}</p>
               {expandedBlogId === blog._id ? (
                 <div>
                   <p className="text-gray-600 mb-4">Forum Body;{blog.body}</p>
