@@ -11,7 +11,7 @@ import { BrowserRouter as Router, Routes, Route } from "react-router-dom"; // Im
 
 
 
-const[goodbye, setGoodbye]= useState(false)
+/* const[goodbye, setGoodbye]= useState(false) */
 
 function App() {
   const[isAdmin, setIsAdmin]=useState(null);
@@ -24,7 +24,7 @@ function App() {
     toast.success("Logged out succesfully.Bye!")
     setGoodbye(false)
   };
-  useEffect(() => {}, [goodbye]);
+  /* useEffect(() => {}, [goodbye]); */
   return(
     <>
       <Router>
