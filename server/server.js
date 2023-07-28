@@ -2,6 +2,7 @@ require('dotenv').config()
 const express=require('express')
 const bcrypt=require('bcrypt')
 const mongoose=require('mongoose')
+const session = require('express-session');
 const MongoDBStore = require('connect-mongodb-session')(session);
 const cors =require('cors')
 const User = require ('./models/userSchema')
@@ -22,21 +23,25 @@ store.on('error', (error) => {
 });
 
 //Middlewares
-//To enable Cross-Origin Resource Sharing
+// Initialize express-session middleware
+app.use(
+  session({
+    secret: process.env.SESSION_SECRET, // Replace with your secret key
+    resave: false,
+    saveUninitialized: false,
+    store: store,
+    cookie: {
+      maxAge: 3600000, // Session will expire after 1 hour (in milliseconds)
+    },
+  })
+);
+// enable Cross-Origin Resource Sharing
 app.use(cors())
 app.use(express.static('../docs/index.html'))
 app.use(express.urlencoded({extended:false}))
 app.use(express.json())
 
-// Initialize express-session middleware
-app.use(
-  session({
-    secret: process.env.SESSION_SECRET || 'secret', // Replace 'secret' with a strong secret key
-    resave: false,
-    saveUninitialized: false,
-    store: store,
-  })
-);
+
 
 
 
@@ -117,8 +122,8 @@ app.post('/adminlogin', async (req, res) => {
 
 
       if (isPasswordCorrect) {
-        // Set the admin as logged in by storing its ID in the session
-        req.session.adminId = admin._id;
+        // Set the admin as logged in by storing its county in the session
+        req.session.selectedCounty = county; 
         res.status(200).json({
           status: 'Logged In',
           username: county
@@ -135,20 +140,39 @@ app.post('/adminlogin', async (req, res) => {
 });
 
 
-//ADMIN BLOG ROUTES
+
+// Get all blogs written by the admin
+app.get('/api/blogs', async (req, res) => {
+  try {
+    const loggedInCounty = "Baringo";
+    // Find all blogs where the author is the currently logged-in admin
+    const blogs = await Blog.find({ author: loggedInCounty });
+    console.log(blogs)
+
+    res.status(200).json(blogs);
+  } catch (error) {
+    res.status(500).json({ Error: 'Failed to fetch blogs', error: error });
+  }
+}); 
 app.post('/api/blogs', async (req, res) => {
   try {
     const { title, summary, body, meetingLink, meetingDate, expiryDate } = req.body;
-    const loggedInAdminId = req.session.adminId;
+    console.log("req.session.selectedCounty;", req.session.cookie.DateselectedCounty)
+    console.log("req.session.Session;", req.session.Session)
+    const loggedInCounty = "Baringo";
+
+    // Debug log to check the data received in the request
+    console.log('Received data:', req.body);
+    console.log('loggedInCounty:', loggedInCounty); // Debug log
 
     // Create a new blog with the provided data
     const blog = new Blog({
       title: title,
       summary: summary,
       body: body,
-      author: loggedInAdminId, // Populating the author field with the ObjectId of the currently logged-in admin user
+      author: loggedInCounty,
       meetingLink: meetingLink,
-      meetingDate:meetingDate,
+      meetingDate: meetingDate,
       expiryDate: expiryDate,
     });
 
@@ -157,23 +181,12 @@ app.post('/api/blogs', async (req, res) => {
 
     res.status(201).json({ status: "Blog created successfully", blog: blog });
   } catch (error) {
-    res.status(400).json({ Error: 'Failed to create blog', error: error });
+    // Error handling and debug log
+    console.error('Error creating blog:', error);
+    res.status(400).json({ Error: 'Failed to create blog', error: error.message });
   }
 });
 
-// Get all blogs written by the admin
-app.get('/api/blogs', async (req, res) => {
-  try {
-    const loggedInAdminId = req.session.adminId;
-
-    // Find all blogs where the author is the currently logged-in admin
-    const blogs = await Blog.find({ author: loggedInAdminId });
-
-    res.status(200).json(blogs);
-  } catch (error) {
-    res.status(500).json({ Error: 'Failed to fetch blogs', error: error });
-  }
-});
 //updating posts by admin
 app.put('/api/blogs/:id', async (req, res) => {
   try {

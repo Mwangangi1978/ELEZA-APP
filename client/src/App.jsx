@@ -3,7 +3,7 @@
 /* import UserAuthentication from './Components/UserAuthentication' */
 import AdminAuthentication from './Components/AdminAuthentication'
 /* import Landing from './Components/Landing' */
-import AdminHomePage from './Components/AdminHomePage'
+
 /* import UserHomePage from './Components/UserHomePage' */
 /* import Settings from './Components/Settings' */
 /* import Contact from './Components/Contact' */
@@ -19,11 +19,10 @@ function App() {
 
 
   return(
-    <>
+    <div >
       <AdminAuthentication />
-      <AdminHomepage />
   
-    </>
+    </div>
   )
 };
 

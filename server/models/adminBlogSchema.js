@@ -26,8 +26,7 @@ const blogSchema = new Schema({
     required: true,
   },
   author: {
-    type: Schema.Types.ObjectId,
-    ref: 'User',
+    type: String,
     required: true,
   },
   meetingLink: {
@@ -35,7 +34,7 @@ const blogSchema = new Schema({
     default: 'No meeting link provided',
     required: false,
   },
-  meetingdate: {
+  meetingDate: {
     type:Date,
     required:false,
   },
@@ -46,4 +45,4 @@ const blogSchema = new Schema({
   },
 });
 
-module.exports = mongoose.model('Blog', blogSchema);s
+module.exports = mongoose.model('Blog', blogSchema);
