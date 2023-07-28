@@ -1,28 +1,62 @@
-/* import React, { useState } from 'react' */
-/* import NavBar from './Components/NavBar' */
-/* import UserAuthentication from './Components/UserAuthentication' */
-/* import AdminAuthentication from './Components/AdminAuthentication' */
-/* import Landing from './Components/Landing' */
+import React, { useState } from 'react'
+import Navbar from './Components/NavBar'
+import ContactPage from "./Components/Contact";
+import AboutPage from "./Components/About";
 
-import UserHomePage from './Components/UserHomePage'
-/* import Settings from './Components/Settings' */
-/* import Contact from './Components/Contact' */
+import UserAuthentication from './Components/UserAuthentication' 
+import AdminAuthentication from './Components/AdminAuthentication' 
+import Landing from './Components/Landing'
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom"; // Import Routes
+
+
+
+
 
 function App() {
-  /* const[isAdmin, setIsAdmin]=useState('')
-  const[hasSubmittedForm, setHasSubmittedForm]=useState('false')
-  const[]=useState('')
-  const[]=useState('')
-  const handleFormSubmit = () => {
-    setHasSubmittedForm(setHasSubmittedForm); */
+  const[isAdmin, setIsAdmin]=useState(null);
+  const handleRoleSelection = (isAdminSelected) => {
+    setIsAdmin(isAdminSelected);
+  };
+  
+
 
 
 
   return(
-    <div >
-      <UserHomePage />
-  
-    </div>
+    
+    <Router>
+      {isAdmin === null ? (
+        // Render the Landing component only when isAdmin is not yet selected
+        <Landing handleSubmit={handleRoleSelection} />
+      ) : (
+        // Render the navigation bar and other routes when isAdmin has a value
+        <>
+          <Navbar />
+          <Routes>
+            {/* AdminAuthentication route */}
+            {isAdmin === true && (
+              <Route path="/admin-authentication" element={<AdminAuthentication />} />
+            )}
+
+            {/* UserAuthentication route */}
+            {isAdmin === false && (
+              <Route path="/user-authentication" element={<UserAuthentication />} />
+            )}
+
+            {/* Other routes */}
+            <Route path="/contact" element={<ContactPage />} />
+            <Route path="/about" element={<AboutPage />} />
+
+            {/* Default fallback route */}
+            <Route path="*" element={<h1>404 - Not Found</h1>} />
+          </Routes>
+        </>
+      )}
+
+
+
+    </Router>
+    
   )
 };
 

@@ -3,6 +3,7 @@ import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import axios from "axios";
 import AdminHomePage from './AdminHomePage'
+import BASE_URL from '../../src/config';
 
 const AdminAuthentication = () => {
     const counties = [
@@ -21,7 +22,7 @@ const AdminAuthentication = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const { data } = await axios.post('http://localhost:4000/adminlogin', {
+      const { data } = await axios.post(`${BASE_URL}/adminlogin`, {
         county: selectedCounty,
         password: password
       });

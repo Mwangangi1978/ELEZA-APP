@@ -3,16 +3,31 @@ import axios from "axios";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import moment from 'moment';
+import BASE_URL from '../../src/config';
 
 const UserHomePage = () => {
   const [blogs, setBlogs] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
+  const[idNumber,setIdNumber]= useState(null);
   const [expandedBlogId, setExpandedBlogId] = useState(null);
+
+  const handleIdNumberChange = (event) => {
+    setIdNumber(event.target.value);
+  };
+
+
+  const handleSubmit = (event) => {
+    event.preventDefault();
+    // Use the idNumber state variable for further processing
+    console.log("User's idNumber:", idNumber);
+    // Reset the input field after processing if needed
+    setIdNumber("");
+  };
 
 
   const fetchBlogs = async () => {
     try {
-      const response = await axios.get(`http://localhost:4000/api/blogs/users?page=${currentPage}`);
+      const response = await axios.get(`${BASE_URL}/api/blogs/users?page=${currentPage}`);
       setBlogs((prevBlogs) => [...prevBlogs, ...response.data]);
     } catch (error) {
       console.error('Error fetching blogs:', error);
@@ -45,7 +60,7 @@ const UserHomePage = () => {
         return;
       }
 
-      await axios.post(`http://localhost:4000/api/blogs/${blogId}/responses`, {
+      await axios.post(`${BASE_URL}/api/blogs/${blogId}/responses`, {
         
         idNumber: idNumber,
         body: responseBody,
@@ -85,7 +100,7 @@ const UserHomePage = () => {
         return;
       }
 
-      await axios.put(`http://localhost:4000/api/blogs/${blogId}/responses/${responseId}`, {
+      await axios.put(`${BASE_URL}/api/blogs/${blogId}/responses/${responseId}`, {
         body: responseBody,
       });
       toast.success("Response resubmitted successfully!");
@@ -105,7 +120,7 @@ const UserHomePage = () => {
         return;
       }
 
-      await axios.delete(`http://localhost:4000/api/blogs/${blogId}/responses/${responseId}`);
+      await axios.delete(`${BASE_URL}/api/blogs/${blogId}/responses/${responseId}`);
       toast.success("Response deleted successfully!");
       // Refresh the blog list after deleting the response
       fetchAuthorBlogs();
@@ -117,12 +132,26 @@ const UserHomePage = () => {
   return (
     <div className="max-w-lg mx-auto">
       <h1 className="text-3xl font-bold mb-6 text-center text-red-600">Welcome!</h1>
+      {idNumber === "" && ( // Render the input field only when idNumber is an empty string
+        <div>
+          <h2>User ID Number:</h2>
+          <form onSubmit={handleSubmit}>
+            <input
+              type="text"
+              value={idNumber}
+              onChange={handleIdNumberChange}
+              placeholder="Enter your ID Number"
+            />
+            <button type="submit">Submit</button>
+          </form>
+        </div>
+      )}
       <h2 className="text-2xl font-bold mb-4 text-center">Forum Posts:</h2>
       {blogs.map((blog) => (
         <div key={blog._id} className="mb-4 border rounded p-4">
           <h3 className="text-xl font-bold mb-2">Title:{blog.title}</h3>
           <h3 className="text-xl mb-2">Forum by:{blog.author}</h3>
-          <p className=" mb-4">Sunnary:{blog.summary}</p>
+          <p className=" mb-4">Summary:{blog.summary}</p>
           <a
             href={blog.meetingLink}
             className="text-blue-500 hover:underline"

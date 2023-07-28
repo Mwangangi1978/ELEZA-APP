@@ -5,7 +5,7 @@ import 'react-datepicker/dist/react-datepicker.css';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import moment from 'moment';
-import NavBar from './NavBar'
+import BASE_URL from '../../src/config';
 
 
 const AdminHomePage = () => {
@@ -108,13 +108,13 @@ const AdminHomePage = () => {
     try {
       if (isUpdateMode && editBlogId) {
         // Send a PUT request to update the existing blog post
-        await axios.put(`http://localhost:4000/api/blogs/${editBlogId}`, blogData);
+        await axios.put(`${BASE_URL}/api/blogs/${editBlogId}`, blogData);
         // Clear the form after successful update
         toast.success("Succesfully updated forum")
         cancelEdit();
       } else {
         // Send a POST request to your backend server to save the blog
-        await axios.post('http://localhost:4000/api/blogs', blogData);
+        await axios.post(`${BASE_URL}/api/blogs`, blogData);
         // Clear the form after successful submission
         toast.success("Forum postedsuccesfully!")
         setBlogData({
@@ -139,7 +139,7 @@ const AdminHomePage = () => {
   const fetchBlogs = async () => {
     try {
       // Fetch all blogs written by the admin
-      const response = await axios.get('http://localhost:4000/api/blogs');
+      const response = await axios.get(`${BASE_URL}/api/blogs`);
       setBlogs(response.data);
     } catch (error) {
       console.error('Error fetching blogs:', error);
@@ -156,7 +156,7 @@ const AdminHomePage = () => {
     try {
       // Send a DELETE request to your backend server to delete the blog
       console.log('deleting blog with the id;' , blogId)
-      await axios.delete(`http://localhost:4000/api/blogs/${blogId}`);
+      await axios.delete(`${BASE_URL}/api/blogs/${blogId}`);
       
       // Refresh the list of blogs after deleting one
       toast.success("Post deleted successfully!")
@@ -176,7 +176,7 @@ const AdminHomePage = () => {
 
   return (
     <>
-      <NavBar />
+      
       <div className="max-w-lg mx-auto">
         
         <h1 className="text-3xl font-bold mb-4">Start Forum</h1>
