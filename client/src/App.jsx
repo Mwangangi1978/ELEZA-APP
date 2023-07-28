@@ -32,23 +32,21 @@ function App() {
         // Render the navigation bar and other routes when isAdmin has a value
         <>
           <Navbar />
-          <Routes>
-            {/* AdminAuthentication route */}
-            {isAdmin === true && (
-              <Route path="/admin-authentication" element={<AdminAuthentication />} />
-            )}
+          
+          {/* AdminAuthentication route */}
+          {isAdmin === true && (
+            <AdminAuthentication />
+          )}
 
-            {/* UserAuthentication route */}
-            {isAdmin === false && (
-              <Route path="/user-authentication" element={<UserAuthentication />} />
-            )}
+          {/* UserAuthentication route */}
+          {isAdmin === false && (
+            <UserAuthentication />
+          )}
+          <Routes>
 
             {/* Other routes */}
             <Route path="/contact" element={<ContactPage />} />
             <Route path="/about" element={<AboutPage />} />
-
-            {/* Default fallback route */}
-            <Route path="*" element={<h1>404 - Not Found</h1>} />
           </Routes>
         </>
       )}

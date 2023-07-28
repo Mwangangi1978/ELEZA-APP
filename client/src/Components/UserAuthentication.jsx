@@ -39,7 +39,7 @@ const UserAuthentication = (props) => {
           password: password,
           county: county
         });
-        toast.success(`Account created successfully!`);
+        toast.success(`Account created successfully! ${data.idNumber}`);
       }
       setHasSubmittedForm(true);
     } catch (error) {
