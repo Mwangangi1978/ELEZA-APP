@@ -61,7 +61,7 @@ const UserAuthentication = (props) => {
       {!hasSubmittedForm &&(
         <div className="max-w-md mx-auto">
           <img
-            src="/public/images/ELEZA.png"
+            src="/images/ELEZA.png"
             alt="User Role"
             className="w-32 h-32 mx-auto mb-4 rounded-full object-cover"
           />

@@ -2,12 +2,16 @@ import React, {useState} from 'react';
 import logo from '/public/images/ELEZA.png';
 import { Link } from "react-router-dom";
 
-const Navbar = () => {
+const Navbar = ({}) => {
 
   const [showMenu, setShowMenu] = useState(false);
 
   const toggleMenu = () => {
     setShowMenu((prevShowMenu) => !prevShowMenu);
+  };
+  const handleLogout = ({logoutCallback}) => {
+    // Call the logout callback function when the "Log out" link is clicked
+    logoutCallback();
   };
 
   return (
@@ -32,7 +36,7 @@ const Navbar = () => {
           <li className="px-4 py-2">
             <Link to="/about">About</Link>
           </li>
-          <li  className="bg-red-500 hover:bg-red-600 px-4 py-2 rounded">
+          <li  className="bg-red-500 hover:bg-red-600 px-4 py-2 rounded" onClick={handleLogout}>
             <Link to="/">Log out</Link>
           </li>
         </ul>
