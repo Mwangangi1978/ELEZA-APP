@@ -23,6 +23,8 @@ const AdminHomePage = () => {
   const [expiryDate, setExpiryDate] = useState(null);
   const [meetingDate, setMeetingDate] = useState(null);
   const [expandedBlogId, setExpandedBlogId] = useState(null);
+  const [reloadPage, setReloadPage] = useState(false);
+
   // State variable to track whether the form is in "Create" or "Update" mode
   const [isUpdateMode, setIsUpdateMode] = useState(false);
   //this will handle view more button
@@ -126,6 +128,7 @@ const AdminHomePage = () => {
         // Refresh the list of blogs after adding a new one
         fetchBlogs();
       }
+      setReloadPage(true);
     } catch (error) {
       console.error(error)
       console.error('Error saving/updating blog:', error);
@@ -138,7 +141,6 @@ const AdminHomePage = () => {
       // Fetch all blogs written by the admin
       const response = await axios.get('http://localhost:4000/api/blogs');
       setBlogs(response.data);
-      toast.success("Signed in succesfully.Welcome!")
     } catch (error) {
       console.error('Error fetching blogs:', error);
       toast.error("Could not get responses.")
@@ -159,6 +161,7 @@ const AdminHomePage = () => {
       // Refresh the list of blogs after deleting one
       toast.success("Post deleted successfully!")
       fetchBlogs();
+      setReloadPage(true);
     } catch (error) {
       console.error('Error deleting blog:', error);
 
@@ -169,7 +172,7 @@ const AdminHomePage = () => {
   useEffect(() => {
     // Fetch blogs when the component mounts
     fetchBlogs();
-  }, []);
+  }, [reloadPage]);
 
   return (
     <>

@@ -6,8 +6,7 @@ const session = require('express-session');
 const MongoDBStore = require('connect-mongodb-session')(session);
 const cors =require('cors')
 const User = require ('./models/userSchema')
-const Response = require('./models/responseSchema')
-const Blog = require('./models/adminBlogSchema')
+const {Blog, Response} = require('./models/adminBlogSchema')
 const Admin = require('./models/adminSchema')
 const app=express()
 
@@ -221,6 +220,7 @@ app.put('/api/blogs/:id', async (req, res) => {
 app.delete('/api/blogs/:id', async (req, res) => {
   try {
     const blogId = req.params.id;
+    console.log(blogId)
 
     // Find the blog post by ID
     const blog = await Blog.findById(blogId);
@@ -230,7 +230,8 @@ app.delete('/api/blogs/:id', async (req, res) => {
     }
 
     // Delete the blog post
-    await blog.delete();
+    await Blog.findByIdAndRemove(blogId);
+
 
     res.status(200).json({ status: "Blog deleted successfully" });
   } catch (error) {
@@ -240,6 +241,59 @@ app.delete('/api/blogs/:id', async (req, res) => {
 
 
 //USER BLOG ROUTES
+//fetching blogs
+app.get('/api/blogs/users', async (req, res) => {
+  try {
+    // Pagination options
+    const page = parseInt(req.query.page) || 1;
+    const perPage = 20;
+
+    // Fetch all blogs using skip and limit for pagination
+    const blogs = await Blog.find()
+      .sort({ expiryDate: 'desc' }) // Sorting by meetingDate in descending order
+      .skip((page - 1) * perPage)
+      .limit(perPage);
+
+    res.status(200).json(blogs);
+  } catch (error) {
+    res.status(500).json({ Error: 'Failed to fetch blogs', error });
+  }
+});
+
+//post user response
+app.post('/api/blogs/:blogId/responses', async (req, res) => {
+  try {
+    const { blogId } = req.params;
+    const { idNumber, body } = req.body;
+
+    // Find the blog by ID
+    const blog = await Blog.findById(blogId);
+    console.log(blogId)
+
+    if (!blog) {
+      return res.status(404).json({ Error: 'Blog not found' });
+    }
+
+    // Check if the blog has an expiry date and if the current date is after the expiry date
+    if (blog.expiryDate && new Date() > new Date(blog.expiryDate)) {
+      return res.status(400).json({ Error: 'Blog has expired. Cannot submit response.' });
+    }
+
+    // Create a new response
+    const response = new Response({
+      blog: blogId,
+      idNumber,
+      body,
+    });
+
+    // Save the response to the DB
+    await response.save();
+
+    res.status(201).json({ status: 'Response submitted successfully', response });
+  } catch (error) {
+    res.status(500).json({ Error: 'Failed to submit response', error });
+  }
+});
 app.post('/api/blogs/:blogId/responses', async (req, res) => {
   try {
     const { blogId } = req.params;

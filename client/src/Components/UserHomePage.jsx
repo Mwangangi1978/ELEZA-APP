@@ -4,47 +4,57 @@ import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import moment from 'moment';
 
-const UserHomePage = ({ userCounty, userNumber }) => {
-  const [authorBlogs, setAuthorBlogs] = useState([]);
+const UserHomePage = () => {
+  const [blogs, setBlogs] = useState([]);
+  const [currentPage, setCurrentPage] = useState(1);
   const [expandedBlogId, setExpandedBlogId] = useState(null);
 
-  const fetchAuthorBlogs = async () => {
+
+  const fetchBlogs = async () => {
     try {
-      const { data } = await axios.get('http://localhost:4000/api/blogs'/* /api/blogs?authorCounty=${userCounty} */);
-      setAuthorBlogs(data);
+      const response = await axios.get(`http://localhost:4000/api/blogs/users?page=${currentPage}`);
+      setBlogs((prevBlogs) => [...prevBlogs, ...response.data]);
     } catch (error) {
-      console.error("Error fetching blogs:", error);
+      console.error('Error fetching blogs:', error);
+      toast.error("data was not fetched ")
     }
+  };
+
+  const handleSeeMoreBlogs = () => {
+    setCurrentPage((prevPage) => prevPage + 1);
   };
 
 
   useEffect(() => {
-    fetchAuthorBlogs();
-  }, [userCounty]);
+    fetchBlogs();
+  }, []);
 
-  const handleResponseSubmit = async (blogId, responseBody) => {
+  const handleResponseSubmit = async (blogId, idNumber, responseBody) => {
     try {
       // Check if the current user has already responded to this blog
-      const userResponses = authorBlogs.find((blog) => blog._id === blogId)?.responses;
-      if (userResponses && userResponses.some((response) => response.idNumber === userNumber)) {
+      const userResponses = blogs.find((blog) => blog._id === blogId)?.responses;
+      if (userResponses && userResponses.some((response) => response.idNumber === idNumber)) {
         toast.error("You can only submit one response per blog.");
         return;
       }
 
       // Check if the blog has an expiry date and if the current date is after the expiry date
-      const blog = authorBlogs.find((blog) => blog._id === blogId);
+      const blog = blogs.find((blog) => blog._id === blogId);
       if (blog?.expiryDate && new Date() > new Date(blog.expiryDate)) {
         toast.error("Blog has expired. Cannot submit response.");
         return;
       }
 
-      await axios.post(`/api/blogs/${blogId}/responses`, {
-        idNumber: userNumber,
+      await axios.post(`http://localhost:4000/api/blogs/${blogId}/responses`, {
+        
+        idNumber: idNumber,
         body: responseBody,
       });
       // Refresh the blog list after submitting a response
-      fetchAuthorBlogs();
+      fetchBlogs();
+      toast.success("submitted response.")
     } catch (error) {
+      toast.error("Could not submit response:", error);
       console.error("Error submitting response:", error);
     }
   };
@@ -69,18 +79,18 @@ const UserHomePage = ({ userCounty, userNumber }) => {
   const handleFormResubmission = async (blogId, responseId, responseBody) => {
     try {
       // Check if the blog has an expiry date and if the current date is after the expiry date
-      const blog = authorBlogs.find((blog) => blog._id === blogId);
+      const blog = blogs.find((blog) => blog._id === blogId);
       if (blog?.expiryDate && new Date() > new Date(blog.expiryDate)) {
         toast.error("Blog has expired. Cannot resubmit response.");
         return;
       }
 
-      await axios.put(`/api/blogs/${blogId}/responses/${responseId}`, {
+      await axios.put(`http://localhost:4000/api/blogs/${blogId}/responses/${responseId}`, {
         body: responseBody,
       });
       toast.success("Response resubmitted successfully!");
       // Refresh the blog list after resubmitting the response
-      fetchAuthorBlogs();
+      fetchBlogs();
     } catch (error) {
       console.error("Error resubmitting response:", error);
     }
@@ -95,7 +105,7 @@ const UserHomePage = ({ userCounty, userNumber }) => {
         return;
       }
 
-      await axios.delete(`/api/blogs/${blogId}/responses/${responseId}`);
+      await axios.delete(`http://localhost:4000/api/blogs/${blogId}/responses/${responseId}`);
       toast.success("Response deleted successfully!");
       // Refresh the blog list after deleting the response
       fetchAuthorBlogs();
@@ -106,12 +116,13 @@ const UserHomePage = ({ userCounty, userNumber }) => {
 
   return (
     <div className="max-w-lg mx-auto">
-      <h1 className="text-3xl font-bold mb-6 text-center text-red-600">Welcome :{userNumber} !</h1>
-      <h2 className="text-2xl font-bold mb-4 text-center">Forum Posts by Your County</h2>
-      {authorBlogs.map((blog) => (
+      <h1 className="text-3xl font-bold mb-6 text-center text-red-600">Welcome!</h1>
+      <h2 className="text-2xl font-bold mb-4 text-center">Forum Posts:</h2>
+      {blogs.map((blog) => (
         <div key={blog._id} className="mb-4 border rounded p-4">
-          <h3 className="text-xl font-bold mb-2">{blog.title}</h3>
-          <p className="text-gray-600 mb-4">{blog.summary}</p>
+          <h3 className="text-xl font-bold mb-2">Title:{blog.title}</h3>
+          <h3 className="text-xl mb-2">Forum by:{blog.author}</h3>
+          <p className=" mb-4">Sunnary:{blog.summary}</p>
           <a
             href={blog.meetingLink}
             className="text-blue-500 hover:underline"
@@ -145,16 +156,31 @@ const UserHomePage = ({ userCounty, userNumber }) => {
             <form
               onSubmit={(e) => {
                 e.preventDefault();
-                const responseBody = e.target.elements.response.value;
-                handleResponseSubmit(blog._id, responseBody);
+                const idNumber = e.target.elements.idNumber.value; // Get the value of idNumber from the form
+                const responseBody = e.target.elements.response.value; // Get the value of responseBody from the form
+                handleResponseSubmit(blog._id, idNumber, responseBody); // Call handleResponseSubmit with idNumber and responseBody
               }}
             >
-              <input
-                type="text"
-                name="response"
-                className="w-full px-3 py-2 border rounded"
-                placeholder="Your response..."
-              />
+              <div>
+                <label htmlFor="idNumber">Your ID Number:</label>
+                <input
+                  type="text"
+                  name="idNumber"
+                  className="w-full px-3 py-2 border rounded"
+                  placeholder="Your ID Number..."
+                  required 
+                />
+              </div>
+              <div>
+                <label htmlFor="response">Response:</label>
+                <input
+                  type="text"
+                  name="response"
+                  className="w-full px-3 py-2 border rounded"
+                  placeholder="Your response..."
+                  required 
+                />
+              </div>
               <button
                 type="submit"
                 className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 mt-2"
@@ -164,9 +190,7 @@ const UserHomePage = ({ userCounty, userNumber }) => {
             </form>
             {/* User Responses */}
             <h2 className="text-2xl font-bold mb-4 ">Your response to this post:</h2>
-            {blog.responses && blog.responses.map(
-              (response) =>
-                response.idNumber === userNumber && (
+            {blog.responses && blog.responses.map((response) =>(
                   <div key={response._id} className="mt-4 border rounded p-4">
                     <h4 className="text-lg font-bold mb-2">Response for: {blog.title}</h4>
                     {blog.showFullBody ? (
@@ -227,6 +251,13 @@ const UserHomePage = ({ userCounty, userNumber }) => {
           </div>
         </div>
       ))}
+      <button
+        className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 mt-2"
+        onClick={handleSeeMoreBlogs}
+      >
+        See More Blogs
+      </button>
+
 
       <ToastContainer />
     </div>
