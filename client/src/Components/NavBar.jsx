@@ -2,14 +2,14 @@ import React, {useState} from 'react';
 import logo from '/public/images/ELEZA.png';
 import { Link } from "react-router-dom";
 
-const Navbar = ({}) => {
+const Navbar = ({ logoutCallback }) => {
 
   const [showMenu, setShowMenu] = useState(false);
 
   const toggleMenu = () => {
     setShowMenu((prevShowMenu) => !prevShowMenu);
   };
-  const handleLogout = ({logoutCallback}) => {
+  const handleLogout = () => {
     // Call the logout callback function when the "Log out" link is clicked
     logoutCallback();
   };

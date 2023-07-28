@@ -22,7 +22,6 @@ function App() {
   const handleLogout = () => {
     setIsAdmin(null);
     toast.success("Logged out succesfully.Bye!")
-    setGoodbye(false)
   };
   /* useEffect(() => {}, [goodbye]); */
   return(
