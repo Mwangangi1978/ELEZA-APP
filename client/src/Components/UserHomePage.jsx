@@ -75,7 +75,7 @@ const UserHomePage = () => {
   };
 
 
-  const handleViewMore = (blogId) => {
+  /* const handleViewMore = (blogId) => {
     // Toggle the expanded state of the blog when "View More" is clicked
     setAuthorBlogs((prevBlogs) =>
       prevBlogs.map((blog) => {
@@ -88,6 +88,10 @@ const UserHomePage = () => {
         return blog;
       })
     );
+  }; */
+  const handleViewMore = (blogId) => {
+    // Toggle the expanded state of the blog when "View More" is clicked
+    setExpandedBlogId((prevId) => (prevId === blogId ? null : blogId));
   };
   
 
@@ -165,7 +169,8 @@ const UserHomePage = () => {
 
 
           {/* Display the blog body only when "showFullBody" is true */}
-          {blog.showFullBody && <p className="text-gray-600 mb-4">{blog.body}</p>}
+          {/* {blog.showFullBody && <p className="text-gray-600 mb-4">{blog.body}</p>} */}
+          {expandedBlogId === blog._id && <p className="text-gray-600 mb-4">{blog.body}</p>}
           {blog.showFullBody ? (
             <button
               className="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600 mr-2"
