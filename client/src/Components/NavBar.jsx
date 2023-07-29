@@ -45,7 +45,7 @@ const Navbar = ({ logoutCallback }) => {
         </ul>
         {/* Expanded menu for small screens */}
         {showMenu && (
-          <ul className="flex flex-col md:hidden w-full p-4 absolute top-16 left-0 bg-maroon">
+          <ul className="flex flex-col md:hidden w-full p-4 absolute top-16 left-0 bg-[grey]">
             <li className="px-4 py-2">
               <Link to="/contact">Contact</Link>
             </li>
