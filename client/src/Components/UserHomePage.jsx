@@ -67,7 +67,7 @@ const UserHomePage = () => {
       });
       // Refresh the blog list after submitting a response
       fetchBlogs();
-      toast.success("submitted response.")
+      toast.success("Response submitted.Thankyou!.")
     } catch (error) {
       toast.error("Could not submit response:", error);
       console.error("Error submitting response:", error);
