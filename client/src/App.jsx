@@ -7,7 +7,9 @@ import { ToastContainer, toast } from 'react-toastify';
 import UserAuthentication from './Components/UserAuthentication' 
 import AdminAuthentication from './Components/AdminAuthentication' 
 import Landing from './Components/Landing'
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom"; // Import Routes
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import '@fortawesome/fontawesome-free/css/all.min.css';
+
 
 
 
