@@ -6,7 +6,7 @@ const AboutPage = () => {
       {/* Image section */}
       <div className="md:w-1/2 flex items-center justify-center md:justify-end">
         <img
-          src="/public/images/ELEZA.png"
+          src="/images/ELEZA.png"
           alt="About Page"
           className="h-full w-full md:h-auto md:w-full object-cover"
         />
