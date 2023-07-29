@@ -145,7 +145,7 @@ app.get('/api/blogs', async (req, res) => {
   try {
     const loggedInCounty = "Baringo";
     // Find all blogs where the author is the currently logged-in admin
-    const blogs = await Blog.find({ author: loggedInCounty });
+    const blogs = await Blog.find({ author: loggedInCounty }).populate('responses');
     console.log(blogs)
 
     res.status(200).json(blogs);
@@ -365,13 +365,12 @@ app.put('/api/blogs/:blogId/responses/:responseId', async (req, res) => {
 });
 
 
-app.get('/api/blogs/responses', async (req, res) => {
+app.get('/api/blogs/:blogId/responses', async (req, res) => {
   try {
-    /* const { blogId } = req.params; */
-    const idNumber = 42148986;
+    const { blogId } = req.params;
 
     // Find the blog by ID
-    const blog = await Blog.findById(idNumber);
+    const blog = await Blog.findById(blogId);
 
     if (!blog) {
       return res.status(404).json({ Error: 'Blog not found' });

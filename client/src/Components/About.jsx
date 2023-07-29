@@ -53,6 +53,7 @@ const AboutPage = () => {
             <li>Submit a response to the forum post.</li>
             <li>Attend virtual meeting if provided.</li>
           </ol>
+          <p>Note you can only submit a response if expiry date for the post has not reached!</p>
         </div>
       </div>
     </div>

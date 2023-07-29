@@ -23,13 +23,16 @@ const AdminHomePage = () => {
   const [expiryDate, setExpiryDate] = useState(null);
   const [meetingDate, setMeetingDate] = useState(null);
   const [expandedBlogId, setExpandedBlogId] = useState(null);
+  const [blogResponses, setBlogResponses] = useState([]);
   const [reloadPage, setReloadPage] = useState(false);
 
   // State variable to track whether the form is in "Create" or "Update" mode
   const [isUpdateMode, setIsUpdateMode] = useState(false);
   //this will handle view more button
-  const handleViewMore = (blogId) => {
+  const handleViewMore = async (blogId) => {
     setExpandedBlogId(blogId);
+    const response = await axios.get(`${BASE_URL}/api/blogs/${blogId}/responses`);
+    setBlogResponses(response.data);
   };
 
   // State variable to track the blog post ID being edited
@@ -177,103 +180,7 @@ const AdminHomePage = () => {
   return (
     <>
       
-      <div className="max-w-lg mx-auto">
-        
-        <h1 className="text-3xl font-bold mb-4">Start Forum</h1>
-        <form onSubmit={handleSubmit}>
-          <div className="mb-4">
-            <label htmlFor="title" className="block font-bold mb-1">
-              Title
-            </label>
-            <input
-              type="text"
-              id="title"
-              name="title"
-              value={blogData.title}
-              onChange={handleChange}
-              className="w-full px-3 py-2 border rounded dark:bg-[grey]"
-              required
-            />
-          </div>
-          <div className="mb-4">
-            <label htmlFor="summary" className="block font-bold mb-1">
-              Summary
-            </label>
-            <textarea
-              id="summary"
-              name="summary"
-              value={blogData.summary}
-              onChange={handleChange}
-              className="w-full px-3 py-2 border rounded dark:bg-[grey]"
-              required
-            />
-          </div>
-          <div className="mb-4">
-            <label htmlFor="body" className="block font-bold mb-1">
-              Body
-            </label>
-            <textarea
-              id="body"
-              name="body"
-              value={blogData.body}
-              onChange={handleChange}
-              className="w-full px-3 py-2 border rounded dark:bg-[grey]"
-              required
-            />
-          </div>
-          <div className="mb-4">
-            <label htmlFor="meetingLink" className="block font-bold mb-1">
-              Meeting Link (optional)
-            </label>
-            <input
-              type="text"
-              id="meetingLink"
-              name="meetingLink"
-              value={blogData.meetingLink}
-              onChange={handleChange}
-              className="w-full px-3 py-2 border rounded dark:bg-[grey]"
-            />
-          </div>
-          <div className="mb-4">
-            <label htmlFor="meetingDate" className="block font-bold mb-1">
-              Virtual Meeting Date and Time
-            </label>
-            <DatePicker
-              id="meetingDate"
-              name="meetingDate"
-              selected={meetingDate}
-              onChange={handleMeetingDateChange}
-              showTimeSelect
-              timeFormat="HH:mm"
-              timeIntervals={15}
-              dateFormat="yyyy-MM-dd HH:mm"
-              className="w-full px-3 py-2 border rounded dark:bg-[grey]"
-              placeholderText="YYYY-MM-DD HH:mm"
-            />
-          </div>
-          <div className="mb-4">
-            <label htmlFor="expiryDate" className="block font-bold mb-1">
-              Expiry Date
-            </label>
-            <DatePicker
-              id="expiryDate"
-              name="expiryDate"
-              selected={expiryDate}
-              onChange={handleExpiryDateChange}
-              dateFormat="yyyy-MM-dd"
-              className="w-full px-3 py-2 border rounded dark:bg-[grey]"
-              placeholderText="YYYY-MM-DD"
-              required
-            />
-          </div>
-          <button
-            type="submit"
-            className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
-          >
-            Submit
-          </button>
-        </form>
-        
+      <div className="max-w-lg mx-auto"> 
         <div className="mt-8">
           <h2 className="text-2xl font-bold mb-4">Your Forums:</h2>
           {blogs.map((blog) => (
@@ -293,7 +200,14 @@ const AdminHomePage = () => {
               {expandedBlogId === blog._id ? (
                 <div>
                   <p className="text-gray-600 mb-4">Forum Body;{blog.body}</p>
-                  {/* Additional blog content, if any */}
+                  <h2 className="text-xl font-bold mb-2">Responses:</h2>
+                  {blogResponses.map((response) => (
+                    <div key={response._id}>
+                      <p className="text-white">Response by;: <span className='text-gray-600 mb-4'>{response._id}</span></p>
+                      <p className="text-white">Response: <span className='text-gray-600 mb-4'>{response.body}</span></p>
+                      {/* Add other response properties as needed */}
+                    </div>
+                  ))}
                   <button
                     className="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600 mr-2"
                     onClick={() => setExpandedBlogId(null)}
@@ -440,6 +354,100 @@ const AdminHomePage = () => {
           ))};
 
         </div>
+        <h1 className="text-3xl font-bold mb-4">Start Forum</h1>
+        <form onSubmit={handleSubmit}>
+          <div className="mb-4">
+            <label htmlFor="title" className="block font-bold mb-1">
+              Title
+            </label>
+            <input
+              type="text"
+              id="title"
+              name="title"
+              value={blogData.title}
+              onChange={handleChange}
+              className="w-full px-3 py-2 border rounded dark:bg-[grey]"
+              required
+            />
+          </div>
+          <div className="mb-4">
+            <label htmlFor="summary" className="block font-bold mb-1">
+              Summary
+            </label>
+            <textarea
+              id="summary"
+              name="summary"
+              value={blogData.summary}
+              onChange={handleChange}
+              className="w-full px-3 py-2 border rounded dark:bg-[grey]"
+              required
+            />
+          </div>
+          <div className="mb-4">
+            <label htmlFor="body" className="block font-bold mb-1">
+              Body
+            </label>
+            <textarea
+              id="body"
+              name="body"
+              value={blogData.body}
+              onChange={handleChange}
+              className="w-full px-3 py-2 border rounded dark:bg-[grey]"
+              required
+            />
+          </div>
+          <div className="mb-4">
+            <label htmlFor="meetingLink" className="block font-bold mb-1">
+              Meeting Link (optional)
+            </label>
+            <input
+              type="text"
+              id="meetingLink"
+              name="meetingLink"
+              value={blogData.meetingLink}
+              onChange={handleChange}
+              className="w-full px-3 py-2 border rounded dark:bg-[grey]"
+            />
+          </div>
+          <div className="mb-4">
+            <label htmlFor="meetingDate" className="block font-bold mb-1">
+              Virtual Meeting Date and Time
+            </label>
+            <DatePicker
+              id="meetingDate"
+              name="meetingDate"
+              selected={meetingDate}
+              onChange={handleMeetingDateChange}
+              showTimeSelect
+              timeFormat="HH:mm"
+              timeIntervals={15}
+              dateFormat="yyyy-MM-dd HH:mm"
+              className="w-full px-3 py-2 border rounded dark:bg-[grey]"
+              placeholderText="YYYY-MM-DD HH:mm"
+            />
+          </div>
+          <div className="mb-4">
+            <label htmlFor="expiryDate" className="block font-bold mb-1">
+              Expiry Date
+            </label>
+            <DatePicker
+              id="expiryDate"
+              name="expiryDate"
+              selected={expiryDate}
+              onChange={handleExpiryDateChange}
+              dateFormat="yyyy-MM-dd"
+              className="w-full px-3 py-2 border rounded dark:bg-[grey]"
+              placeholderText="YYYY-MM-DD"
+              required
+            />
+          </div>
+          <button
+            type="submit"
+            className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+          >
+            Submit
+          </button>
+        </form>
         <div className="max-w-md mx-auto">
           <ToastContainer />
         </div>

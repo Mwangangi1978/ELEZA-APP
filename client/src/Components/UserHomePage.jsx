@@ -196,7 +196,7 @@ const UserHomePage = () => {
               }}
             >
               <div>
-                <label htmlFor="idNumber">Your ID Number:</label>
+                <label htmlFor="idNumber">Your ID number;:</label>
                 <input
                   type="text"
                   name="idNumber"
@@ -222,66 +222,6 @@ const UserHomePage = () => {
                 Submit Response
               </button>
             </form>
-            {/* User Responses */}
-            <h2 className="text-2xl font-bold mb-4 ">Your response to this post:</h2>
-            {blog.responses && blog.responses.map((response) =>(
-                  <div key={response._id} className="mt-4 border rounded p-4">
-                    <h4 className="text-lg font-bold mb-2">Response for: {blog.title}</h4>
-                    {blog.showFullBody ? (
-                      <p className="mb-2">{response.body}</p>
-                    ) : (
-                      <p className="mb-2">{response.body.slice(0, 100)}...</p>
-                    )}
-
-                    {/* Show the "Resubmit Response" button */}
-                    {!showResubmitForm && (
-                      <button
-                        className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 mr-2"
-                        onClick={() => setShowResubmitForm(true)}
-                      >
-                        Resubmit Response
-                      </button>
-                    )}
-
-                    {/* Show the form for resubmitting the response if the button is clicked */}
-                    {showResubmitForm && (
-                      <form
-                        onSubmit={(e) => {
-                          e.preventDefault();
-                          const responseBody = e.target.elements['resubmit-response'].value;
-                          handleFormResubmission(blog._id, response._id, responseBody);
-                          setShowResubmitForm(false); // Hide the form after submission
-                        }}
-                      >
-                        <input
-                          type="text"
-                          name="resubmit-response"
-                          className="w-full px-3 py-2 border rounded"
-                          placeholder="Your response..."
-                          defaultValue={response.body}
-                        />
-                        <button
-                          type="submit"
-                          className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 mr-2"
-                        >
-                          Resubmit Response
-                        </button>
-                        <button
-                          className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600"
-                          onClick={() => handleDeleteClick(blog._id, response._id)}
-                        >
-                          Delete Response
-                        </button>
-                      </form>
-                    )}
-
-                  </div>
-                )
-              )}
-            {/* Display the placeholder text when there are no responses */}
-          {blog.responses && blog.responses.length === 0 && (
-            <p>No response yet.</p>
-          )}
           </div>
         </div>
       ))}
